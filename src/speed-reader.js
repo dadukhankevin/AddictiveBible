@@ -117,7 +117,7 @@ function tick() {
   }
 
   const entry = words[wordIndex];
-  wordEl.textContent = entry.word;
+  renderORP(entry.word);
 
   if (entry.vi !== currentVerseIndex) {
     currentVerseIndex = entry.vi;
@@ -130,6 +130,48 @@ function tick() {
 
   const delay = computeDelay(entry.word);
   timer = setTimeout(tick, delay);
+}
+
+// ORP (Optimal Recognition Point) — the letter your eye naturally fixates on
+// Roughly 25-35% into the word, slightly left of center
+function getORPIndex(word) {
+  const letters = word.replace(/[^a-zA-Z]/g, '');
+  const len = letters.length;
+  if (len <= 1) return 0;
+  if (len <= 3) return 1;
+  if (len <= 5) return 1;
+  if (len <= 7) return 2;
+  if (len <= 9) return 2;
+  if (len <= 13) return 3;
+  return 4;
+}
+
+function renderORP(word) {
+  // Find ORP position in the actual word (including punctuation)
+  const orpInLetters = getORPIndex(word);
+
+  // Map letter-index to character-index (skip leading punctuation)
+  let letterCount = 0;
+  let orpCharIndex = 0;
+  for (let i = 0; i < word.length; i++) {
+    if (/[a-zA-Z]/.test(word[i])) {
+      if (letterCount === orpInLetters) {
+        orpCharIndex = i;
+        break;
+      }
+      letterCount++;
+    }
+  }
+
+  const before = word.slice(0, orpCharIndex);
+  const orp = word[orpCharIndex] || '';
+  const after = word.slice(orpCharIndex + 1);
+
+  // Use a table layout to pin the ORP letter to the center guide
+  wordEl.innerHTML =
+    `<span class="orp-before">${before}</span>` +
+    `<span class="orp-letter">${orp}</span>` +
+    `<span class="orp-after">${after}</span>`;
 }
 
 // Natural reading rhythm model
