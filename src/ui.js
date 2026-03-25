@@ -63,8 +63,8 @@ export function initUI({ onShuffle, onSpeedRead, onNavigate }) {
 
   modal.querySelector('.modal-backdrop').addEventListener('click', closeModal);
 
-  // Header tap → open nav picker
-  header.addEventListener('click', openNavPicker);
+  // Header ref tap → open nav picker
+  document.getElementById('header-ref').addEventListener('click', openNavPicker);
   document.getElementById('nav-close').addEventListener('click', closeNavPicker);
   navBack.addEventListener('click', navGoBack);
 

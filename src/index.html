@@ -25,6 +25,7 @@
       <div class="home-top">
         <div class="home-icon"><i class="fa-solid fa-book-bible"></i></div>
         <h1 class="home-title">AddictiveBible</h1>
+        <p class="home-tagline">A Bible app that doesn't give you a reason to stop reading.</p>
       </div>
       <div class="home-instructions">
         <div class="instruction">
@@ -92,7 +93,20 @@
   <div id="reader-screen" class="screen">
     <div id="bg-image" class="bg-image"></div>
     <div id="header" class="reader-header">
+      <div class="header-left">
+        <button id="shuffle-btn" class="header-btn" aria-label="Shuffle">
+          <i class="fa-solid fa-shuffle"></i>
+        </button>
+      </div>
       <span id="header-ref"></span>
+      <div class="header-right">
+        <button id="likes-btn" class="header-btn" aria-label="Likes">
+          <i class="fa-solid fa-heart"></i>
+        </button>
+        <button id="stats-btn" class="header-btn" aria-label="Stats">
+          <i class="fa-solid fa-chart-simple"></i>
+        </button>
+      </div>
     </div>
     <div id="reader" class="reader-container">
       <div id="sentinel-top" class="sentinel"></div>
@@ -101,20 +115,9 @@
     </div>
     <div class="fog fog-top"></div>
     <div class="fog fog-bottom"></div>
-    <div class="bottom-controls">
-      <button id="speed-btn" class="control-btn" aria-label="Speed read">
-        <i class="fa-solid fa-bolt"></i>
-      </button>
-      <button id="shuffle-btn" class="shuffle-btn" aria-label="Shuffle passage">
-        <i class="fa-solid fa-shuffle"></i>
-      </button>
-      <button id="likes-btn" class="control-btn" aria-label="Liked verses">
-        <i class="fa-solid fa-heart"></i>
-      </button>
-      <button id="stats-btn" class="control-btn" aria-label="Stats">
-        <i class="fa-solid fa-chart-simple"></i>
-      </button>
-    </div>
+    <button id="speed-btn" class="speed-hero-btn" aria-label="Speed read">
+      <i class="fa-solid fa-bolt"></i>
+    </button>
   </div>
 
   <!-- Speed Read Overlay -->
@@ -131,7 +134,7 @@
       <button id="speed-slower" class="speed-ctrl-btn">
         <i class="fa-solid fa-minus"></i>
       </button>
-      <div id="speed-wpm" class="speed-wpm">250 wpm</div>
+      <div id="speed-wpm" class="speed-wpm">300 wpm</div>
       <button id="speed-faster" class="speed-ctrl-btn">
         <i class="fa-solid fa-plus"></i>
       </button>

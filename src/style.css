@@ -72,6 +72,15 @@ html, body {
   margin-bottom: 2rem;
 }
 
+.home-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.6rem;
+  line-height: 1.4;
+  font-style: italic;
+}
+
 .home-icon {
   font-size: 2.5rem;
   color: var(--text-muted);
@@ -243,7 +252,35 @@ html, body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
-  padding: calc(env(safe-area-inset-top, 0px) + 14px) 1.25rem 14px;
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 0.75rem 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.reader-header.visible {
+  opacity: 1;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-left {
+  min-width: 70px;
+}
+
+.header-right {
+  min-width: 70px;
+  justify-content: flex-end;
+}
+
+#header-ref {
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-muted);
@@ -252,12 +289,27 @@ html, body {
   text-align: center;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  flex: 1;
 }
 
-.reader-header.visible {
-  opacity: 1;
+.header-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease;
+}
+
+.header-btn:active {
+  color: var(--text);
 }
 
 .reader-container {
@@ -428,46 +480,49 @@ html, body {
   transform: translateX(3px);
 }
 
-/* Bottom Controls */
-.bottom-controls {
+/* Hero Speed Button */
+.speed-hero-btn {
   position: fixed;
-  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.shuffle-btn,
-.control-btn {
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--shuffle-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  color: var(--text-muted);
-  font-size: 1.1rem;
+  border: none;
+  background: linear-gradient(135deg, #f7c948, #f0a30a);
+  color: #1a1a1a;
+  font-size: 1.4rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  box-shadow:
+    0 2px 16px rgba(247, 201, 72, 0.35),
+    0 0 30px rgba(247, 201, 72, 0.15);
+  animation: heroGlow 3s ease-in-out infinite;
 }
 
-.shuffle-btn:hover,
-.control-btn:hover {
-  color: var(--text);
+.speed-hero-btn:active {
+  transform: translateX(-50%) scale(0.9);
+  animation: none;
 }
 
-.shuffle-btn:active,
-.control-btn:active {
-  transform: scale(0.88);
+@keyframes heroGlow {
+  0%, 100% {
+    box-shadow:
+      0 2px 16px rgba(247, 201, 72, 0.35),
+      0 0 30px rgba(247, 201, 72, 0.15);
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    box-shadow:
+      0 4px 24px rgba(247, 201, 72, 0.5),
+      0 0 50px rgba(247, 201, 72, 0.25);
+    transform: translateX(-50%) scale(1.04);
+  }
 }
 
 .shuffle-btn.spin i {
