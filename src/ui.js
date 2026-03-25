@@ -94,12 +94,40 @@ export function initUI({ onShuffle, onSpeedRead, onNavigate }) {
   document.getElementById('stats-btn').addEventListener('click', openStats);
   document.getElementById('stats-close').addEventListener('click', closeStats);
 
+  // Font size controls
+  initFontSize();
+  document.getElementById('font-down').addEventListener('click', () => changeFontSize(-1));
+  document.getElementById('font-up').addEventListener('click', () => changeFontSize(1));
+
   shuffleBtn.addEventListener('click', () => {
     shuffleBtn.classList.remove('spin');
     void shuffleBtn.offsetWidth;
     shuffleBtn.classList.add('spin');
     if (onShuffle) onShuffle();
   });
+}
+
+// ==================== FONT SIZE ====================
+
+const FONT_SIZES = [0.9, 1.0, 1.15, 1.3, 1.5, 1.7];
+const FONT_KEY = 'ab_fontsize';
+let fontSizeIndex = 2; // default 1.15rem
+
+function initFontSize() {
+  const saved = localStorage.getItem(FONT_KEY);
+  if (saved !== null) fontSizeIndex = parseInt(saved);
+  applyFontSize();
+}
+
+function changeFontSize(delta) {
+  fontSizeIndex = Math.max(0, Math.min(FONT_SIZES.length - 1, fontSizeIndex + delta));
+  localStorage.setItem(FONT_KEY, String(fontSizeIndex));
+  applyFontSize();
+}
+
+function applyFontSize() {
+  const size = FONT_SIZES[fontSizeIndex];
+  document.documentElement.style.setProperty('--verse-font-size', size + 'rem');
 }
 
 // ==================== STATS DASHBOARD ====================
