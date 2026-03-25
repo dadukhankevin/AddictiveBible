@@ -29,6 +29,10 @@ const MIN_WPM = 100;
 const MAX_WPM = 800;
 const WPM_STEP = 50;
 
+const SPEED_FONT_SIZES = [1.8, 2.2, 2.8, 3.4, 4.0];
+const SPEED_FONT_KEY = 'ab_speed_fontsize';
+let speedFontIndex = 2; // default 2.8rem
+
 export function initSpeedReader({ onCloseHandler }) {
   overlay = document.getElementById('speed-overlay');
   wordEl = document.getElementById('speed-word');
@@ -42,7 +46,14 @@ export function initSpeedReader({ onCloseHandler }) {
   document.getElementById('speed-close').addEventListener('click', close);
   document.getElementById('speed-slower').addEventListener('click', slower);
   document.getElementById('speed-faster').addEventListener('click', faster);
+  document.getElementById('speed-font-down').addEventListener('click', () => changeSpeedFont(-1));
+  document.getElementById('speed-font-up').addEventListener('click', () => changeSpeedFont(1));
   playPauseBtn.addEventListener('click', togglePause);
+
+  // Load saved font size
+  const savedFont = localStorage.getItem(SPEED_FONT_KEY);
+  if (savedFont !== null) speedFontIndex = parseInt(savedFont);
+  applySpeedFont();
 }
 
 export function startSpeedRead(verseIndex) {
@@ -305,6 +316,18 @@ function faster() {
 
 function updateWpmDisplay() {
   wpmEl.textContent = `${wpm} wpm`;
+}
+
+function changeSpeedFont(delta) {
+  speedFontIndex = Math.max(0, Math.min(SPEED_FONT_SIZES.length - 1, speedFontIndex + delta));
+  localStorage.setItem(SPEED_FONT_KEY, String(speedFontIndex));
+  applySpeedFont();
+}
+
+function applySpeedFont() {
+  const size = SPEED_FONT_SIZES[speedFontIndex];
+  wordEl.style.fontSize = size + 'rem';
+  document.getElementById('speed-font-label').textContent = `Font ${speedFontIndex + 1}/${SPEED_FONT_SIZES.length}`;
 }
 
 function updatePlayPauseIcon() {

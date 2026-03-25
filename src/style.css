@@ -1017,6 +1017,10 @@ html, body {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.speed-controls:first-of-type {
   margin-top: 3rem;
 }
 
