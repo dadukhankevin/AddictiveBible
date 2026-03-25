@@ -1,0 +1,20 @@
+{
+  "name": "addictivebible",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:data": "node scripts/build-bible-data.js && node scripts/build-tfidf.js",
+    "build": "npm run build:data && vite build",
+    "deploy": "npm run build && npx wrangler pages deploy dist/ --project-name addictive-bible"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "vite": "^6.4.1",
+    "vite-plugin-pwa": "^1.2.0",
+    "wrangler": "^4.77.0"
+  }
+}

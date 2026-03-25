@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1a1a1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>AddictiveBible</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <!-- Home Screen -->
+  <div id="home" class="screen active">
+    <div class="home-content">
+      <div id="streak-badge" class="streak-badge">
+        <i class="fa-solid fa-fire"></i>
+        <span id="streak-count">0</span>
+      </div>
+      <div class="home-top">
+        <div class="home-icon"><i class="fa-solid fa-book-bible"></i></div>
+        <h1 class="home-title">AddictiveBible</h1>
+      </div>
+      <div class="home-instructions">
+        <div class="instruction">
+          <i class="fa-solid fa-arrows-up-down"></i>
+          <span>Scroll to read</span>
+        </div>
+        <div class="instruction">
+          <i class="fa-solid fa-arrows-left-right"></i>
+          <span>Swipe for a new passage</span>
+        </div>
+        <div class="instruction">
+          <i class="fa-solid fa-shuffle"></i>
+          <span>Shuffle to discover</span>
+        </div>
+        <div class="instruction">
+          <i class="fa-solid fa-bolt"></i>
+          <span>Speed read mode</span>
+        </div>
+        <div class="instruction">
+          <i class="fa-solid fa-heart"></i>
+          <span>Double-tap to like</span>
+        </div>
+      </div>
+      <div class="home-verses">
+        <div class="home-verse-row">
+          <div class="home-verse-label">Verse of the day</div>
+          <div id="verse-day" class="home-verse-text"></div>
+          <div id="verse-day-ref" class="home-verse-ref"></div>
+        </div>
+        <div class="home-verse-row">
+          <div class="home-verse-label">Verse of the hour</div>
+          <div id="verse-hour" class="home-verse-text"></div>
+          <div id="verse-hour-ref" class="home-verse-ref"></div>
+        </div>
+        <div class="home-verse-row">
+          <div class="home-verse-label">Verse of the minute</div>
+          <div id="verse-minute" class="home-verse-text"></div>
+          <div id="verse-minute-ref" class="home-verse-ref"></div>
+        </div>
+        <div class="home-verse-row">
+          <div class="home-verse-label">Verse of the second</div>
+          <div id="verse-second" class="home-verse-text"></div>
+          <div id="verse-second-ref" class="home-verse-ref"></div>
+        </div>
+      </div>
+      <div class="home-scroll-hint">
+        <i class="fa-solid fa-chevron-down"></i>
+        <span>Scroll to begin</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Dashboard -->
+  <div id="stats-overlay" class="stats-overlay">
+    <div class="stats-header">
+      <h2 class="stats-title"><i class="fa-solid fa-chart-simple"></i> Your Journey</h2>
+      <button id="stats-close" class="stats-close" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div id="stats-content" class="stats-content"></div>
+  </div>
+
+  <!-- Reader Screen -->
+  <div id="reader-screen" class="screen">
+    <div id="bg-image" class="bg-image"></div>
+    <div id="header" class="reader-header">
+      <span id="header-ref"></span>
+    </div>
+    <div id="reader" class="reader-container">
+      <div id="sentinel-top" class="sentinel"></div>
+      <div id="verses"></div>
+      <div id="sentinel-bottom" class="sentinel"></div>
+    </div>
+    <div class="fog fog-top"></div>
+    <div class="fog fog-bottom"></div>
+    <div class="bottom-controls">
+      <button id="speed-btn" class="control-btn" aria-label="Speed read">
+        <i class="fa-solid fa-bolt"></i>
+      </button>
+      <button id="shuffle-btn" class="shuffle-btn" aria-label="Shuffle passage">
+        <i class="fa-solid fa-shuffle"></i>
+      </button>
+      <button id="likes-btn" class="control-btn" aria-label="Liked verses">
+        <i class="fa-solid fa-heart"></i>
+      </button>
+      <button id="stats-btn" class="control-btn" aria-label="Stats">
+        <i class="fa-solid fa-chart-simple"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Speed Read Overlay -->
+  <div id="speed-overlay" class="speed-overlay">
+    <button id="speed-close" class="speed-close" aria-label="Close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div id="speed-ref" class="speed-ref"></div>
+    <div class="speed-display">
+      <div id="speed-countdown" class="speed-countdown"></div>
+      <div id="speed-word" class="speed-word"></div>
+    </div>
+    <div class="speed-controls">
+      <button id="speed-slower" class="speed-ctrl-btn">
+        <i class="fa-solid fa-minus"></i>
+      </button>
+      <div id="speed-wpm" class="speed-wpm">250 wpm</div>
+      <button id="speed-faster" class="speed-ctrl-btn">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+    <button id="speed-playpause" class="speed-playpause">
+      <i class="fa-solid fa-pause"></i>
+    </button>
+    <div id="speed-stats" class="speed-stats">0 words &middot; 0s</div>
+  </div>
+
+  <!-- Navigation Picker -->
+  <div id="nav-overlay" class="nav-overlay">
+    <div class="nav-header">
+      <button id="nav-back" class="nav-back" style="visibility: hidden;" aria-label="Back">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <h2 id="nav-title" class="nav-title">Books</h2>
+      <button id="nav-close" class="nav-close" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div id="nav-list" class="nav-list"></div>
+  </div>
+
+  <!-- Likes Overlay -->
+  <div id="likes-overlay" class="likes-overlay">
+    <div class="likes-header">
+      <h2 class="likes-title"><i class="fa-solid fa-heart"></i> Liked Verses</h2>
+      <button id="likes-close" class="likes-close" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div id="likes-list" class="likes-list"></div>
+  </div>
+
+  <!-- Verse Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="modal-ref" class="modal-ref"></div>
+      <div id="modal-text" class="modal-text"></div>
+      <button id="modal-like" class="modal-like">
+        <i class="fa-solid fa-heart"></i> Like this verse
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
