@@ -5,7 +5,7 @@ let vocab = null;
 let vectors = null;
 let termToIndex = null;
 
-function stem(word) {
+export function stem(word) {
   if (word.length < 4) return word;
   word = word.replace(/ing$/, '').replace(/tion$/, 't').replace(/sion$/, 's')
     .replace(/ness$/, '').replace(/ment$/, '').replace(/ful$/, '')
@@ -39,6 +39,18 @@ function tokenize(text) {
   return text.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/)
     .filter(w => w.length > 2 && !STOPWORDS.has(w))
     .map(stem);
+}
+
+export function getWordIdf(word) {
+  if (!vocab || !termToIndex) return -1;
+  const stemmed = stem(word);
+  const idx = termToIndex[stemmed];
+  if (idx === undefined) return -1;
+  return vocab.idf[idx];
+}
+
+export function isStopword(word) {
+  return STOPWORDS.has(word);
 }
 
 export async function loadRecommendData() {

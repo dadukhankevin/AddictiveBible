@@ -48,6 +48,10 @@
           <i class="fa-solid fa-heart"></i>
           <span>Double-tap to like</span>
         </div>
+        <div class="instruction">
+          <i class="fa-solid fa-crosshairs"></i>
+          <span>Word hunt game</span>
+        </div>
       </div>
       <div class="home-verses">
         <div class="home-verse-row">
@@ -106,6 +110,9 @@
         <button id="font-up" class="header-btn" aria-label="Larger text">
           <i class="fa-solid fa-plus"></i>
         </button>
+        <button id="hunt-btn" class="header-btn" aria-label="Word Hunt">
+          <i class="fa-solid fa-crosshairs"></i>
+        </button>
         <button id="likes-btn" class="header-btn" aria-label="Likes">
           <i class="fa-solid fa-heart"></i>
         </button>
@@ -124,6 +131,23 @@
     <button id="speed-btn" class="speed-hero-btn" aria-label="Speed read">
       <i class="fa-solid fa-bolt"></i>
     </button>
+    <!-- Word Hunt HUD -->
+    <div id="word-hunt-hud" class="word-hunt-hud">
+      <div class="wh-target">
+        <span class="wh-icon"><i class="fa-solid fa-crosshairs"></i></span>
+        <span class="wh-label">Find</span>
+        <span id="wh-word" class="wh-word"></span>
+      </div>
+      <div class="wh-scores">
+        <span id="wh-score" class="wh-score">0</span>
+        <span class="wh-divider">&middot;</span>
+        <span id="wh-best" class="wh-best">Best: 0</span>
+      </div>
+      <button id="wh-close" class="wh-close" aria-label="Close word hunt">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div id="wh-feedback" class="wh-feedback"></div>
+    </div>
   </div>
 
   <!-- Speed Read Overlay -->

@@ -6,6 +6,7 @@ import { loadRecommendData, recommend, randomColdStart } from './recommend.js';
 import { initUI, initHomeScreen, showReader, setBackgroundImage, updateHeader, showModal, closeModal, isModalOpen } from './ui.js';
 import { initSpeedReader, startSpeedRead } from './speed-reader.js';
 import { initStats, recordChapter } from './stats.js';
+import { initWordHunt, pickTarget, checkWordTap, checkScrollPast, isWordHuntActive, toggleWordHunt } from './word-hunt.js';
 
 let readerInitialized = false;
 let savePositionTimer = null;
@@ -14,6 +15,7 @@ async function init() {
   await Promise.all([loadBible(), loadRecommendData()]);
   initSignals();
   initStats();
+  initWordHunt({ onChange: updateWordHuntHUD });
 
   initHomeScreen((specificVerse) => {
     let vi;
@@ -62,6 +64,9 @@ function startReading(verseIndex, highlight = false) {
         // Debounce position save — every 2 seconds while scrolling
         if (savePositionTimer) clearTimeout(savePositionTimer);
         savePositionTimer = setTimeout(() => saveLastVerse(vi), 2000);
+        // Word hunt: check if target was scrolled past
+        const missed = checkScrollPast(vi);
+        if (missed) showWordHuntFeedback(false);
       },
       onNavigate: (vi) => navigateToVerse(vi),
     });
@@ -101,6 +106,11 @@ function navigateToVerse(verseIndex) {
     setAnchor(verseIndex, v.t, ch.ci, reader.scrollTop);
     recordChapter(ch.ci);
   }
+
+  // Pick a new word hunt target for this passage
+  if (isWordHuntActive()) {
+    pickTarget(verseIndex);
+  }
 }
 
 function handleShuffle() {
@@ -123,11 +133,26 @@ function handleSwipe() {
   handleShuffle();
 }
 
-function handleTap(verseIndex) {
+function handleTap(verseIndex, tappedEl) {
   if (isModalOpen()) {
     closeModal();
     return;
   }
+
+  // Word hunt: check if user tapped the target word
+  if (isWordHuntActive() && tappedEl && tappedEl.classList.contains('w')) {
+    const word = tappedEl.dataset.w;
+    if (checkWordTap(word)) {
+      tappedEl.classList.add('wh-found');
+      showWordHuntFeedback(true);
+      setTimeout(() => {
+        const vi = getAnchorVerse();
+        pickTarget(vi);
+      }, 600);
+      return;
+    }
+  }
+
   showModal(verseIndex);
 }
 
@@ -144,5 +169,56 @@ function handleDoubleTap(verseIndex) {
     }
   }
 }
+
+// Word hunt UI
+function updateWordHuntHUD(state) {
+  const hud = document.getElementById('word-hunt-hud');
+  const wordEl = document.getElementById('wh-word');
+  const scoreEl = document.getElementById('wh-score');
+  const bestEl = document.getElementById('wh-best');
+  const huntBtn = document.getElementById('hunt-btn');
+  const readerScreen = document.getElementById('reader-screen');
+
+  if (state.active) {
+    hud.classList.add('active');
+    readerScreen.classList.add('wh-on');
+    huntBtn.classList.add('hunt-active');
+    if (state.target) {
+      wordEl.textContent = state.target.word;
+    } else {
+      wordEl.textContent = '\u2026';
+    }
+    scoreEl.textContent = state.score;
+    bestEl.textContent = `Best: ${state.allTimeHigh}`;
+  } else {
+    hud.classList.remove('active');
+    readerScreen.classList.remove('wh-on');
+    huntBtn.classList.remove('hunt-active');
+  }
+}
+
+function showWordHuntFeedback(isPositive) {
+  const feedback = document.getElementById('wh-feedback');
+  feedback.textContent = isPositive ? '+10' : '-10';
+  feedback.className = 'wh-feedback ' + (isPositive ? 'wh-plus' : 'wh-minus');
+  void feedback.offsetHeight;
+  feedback.classList.add('wh-animate');
+  setTimeout(() => {
+    feedback.classList.remove('wh-animate', 'wh-plus', 'wh-minus');
+  }, 1000);
+}
+
+// Word hunt toggle buttons
+document.getElementById('hunt-btn').addEventListener('click', () => {
+  const nowActive = toggleWordHunt();
+  if (nowActive) {
+    const vi = getAnchorVerse();
+    pickTarget(vi);
+  }
+});
+
+document.getElementById('wh-close').addEventListener('click', () => {
+  toggleWordHunt();
+});
 
 init().catch(console.error);

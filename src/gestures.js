@@ -111,11 +111,12 @@ function onPointerUp(e) {
 
     lastTapTime = now;
     lastTapTarget = verseEl.dataset.vi;
+    const tapEl = e.target;
 
     // Delay single tap to allow double tap detection
     setTimeout(() => {
       if (lastTapTime === now) {
-        if (onTap) onTap(parseInt(verseEl.dataset.vi));
+        if (onTap) onTap(parseInt(verseEl.dataset.vi), tapEl);
       }
     }, DOUBLE_TAP_TIME);
   }

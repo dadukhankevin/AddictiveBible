@@ -208,8 +208,8 @@ export function getScrollDelta() {
   return Math.abs(container.scrollTop);
 }
 
-// Bold holy names pattern
-const HOLY_NAMES = /\b(lord|god|jesus|christ|messiah|holy spirit|almighty)\b/gi;
+// Holy name words for bold treatment
+const HOLY_WORDS = new Set(['lord', 'god', 'jesus', 'christ', 'messiah', 'almighty', 'holy', 'spirit']);
 const GOLDEN_CHANCE = 0.007; // ~0.7% of verses get the golden treatment
 
 function createVerseEl(i) {
@@ -220,10 +220,22 @@ function createVerseEl(i) {
   span.className = 'verse';
   span.dataset.vi = i;
 
-  // Bold holy names by using innerHTML with escaped text
-  const escaped = v.t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const highlighted = escaped.replace(HOLY_NAMES, '<strong class="holy-name">$1</strong>');
-  span.innerHTML = highlighted + ' ';
+  // Split text into words and whitespace, wrap each word in a tappable span
+  const parts = v.t.split(/(\s+)/);
+  let html = '';
+  for (const part of parts) {
+    if (/^\s*$/.test(part)) {
+      html += part || '';
+      continue;
+    }
+    const escaped = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const clean = part.toLowerCase().replace(/[^a-z]/g, '');
+    const isHoly = HOLY_WORDS.has(clean);
+    const wordSpan = `<span class="w" data-w="${clean}">${escaped}</span>`;
+    html += isHoly ? `<strong class="holy-name">${wordSpan}</strong>` : wordSpan;
+  }
+  html += ' ';
+  span.innerHTML = html;
 
   // Rare golden verse effect
   if (Math.random() < GOLDEN_CHANCE) {
