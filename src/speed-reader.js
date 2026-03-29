@@ -245,7 +245,10 @@ function computeDelay(word) {
     punctuationMultiplier = Math.max(punctuationMultiplier, 1.3);
   }
 
-  return baseDelay * lengthMultiplier * momentumMultiplier * punctuationMultiplier;
+  // 5. Numbers — readers fixate 2.5x more on numerals (research: ~1.3x delay)
+  const numberMultiplier = /\d/.test(word) ? 1.3 : 1.0;
+
+  return baseDelay * lengthMultiplier * momentumMultiplier * punctuationMultiplier * numberMultiplier;
 }
 
 function getElapsed() {
