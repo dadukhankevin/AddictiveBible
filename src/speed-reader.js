@@ -26,7 +26,7 @@ let statsTimer = null;
 let wordsIntoSentence = 0;
 
 const MIN_WPM = 100;
-const MAX_WPM = 800;
+const MAX_WPM = 1000;
 const WPM_STEP = 50;
 
 const SPEED_FONT_SIZES = [1.8, 2.2, 2.8, 3.4, 4.0];
@@ -130,7 +130,9 @@ function tick() {
   const entry = words[wordIndex];
   renderORP(entry.word);
 
-  if (entry.vi !== currentVerseIndex) {
+  // Verse boundary pause — treat like a paragraph break (research: 2.5x)
+  const verseBoundary = entry.vi !== currentVerseIndex;
+  if (verseBoundary) {
     currentVerseIndex = entry.vi;
     refEl.textContent = getVerseRef(currentVerseIndex);
   }
@@ -139,7 +141,11 @@ function tick() {
   wordsRead++;
   wordsIntoSentence++;
 
-  const delay = computeDelay(entry.word);
+  let delay = computeDelay(entry.word);
+  if (verseBoundary) {
+    const baseDelay = 60000 / wpm;
+    delay = Math.max(delay, baseDelay * 2.5);
+  }
   timer = setTimeout(tick, delay);
 }
 
@@ -185,59 +191,61 @@ function renderORP(word) {
     `<span class="orp-after">${after}</span>`;
 }
 
-// Natural reading rhythm model
+// Natural reading rhythm model — based on RSVP research:
+// - Punctuation pauses: multiplicative, not additive (Masson 1983, pasky/speedread, DashReader)
+// - Word length: sublinear sqrt scaling (pasky/speedread)
+// - Sentence momentum: heuristic for natural pacing
 function computeDelay(word) {
   const baseDelay = 60000 / wpm;
 
-  // 1. Word length — longer words need more processing time
+  // 1. Word length — sublinear sqrt scaling (diminishing returns for long words)
   const letters = word.replace(/[^a-zA-Z]/g, '');
   const len = letters.length;
-  const lengthMultiplier = 0.7 + (len * 0.075);
-  // 3-char ≈ 0.93x, 5-char ≈ 1.08x, 8-char ≈ 1.30x, 12-char ≈ 1.60x
+  const lengthMultiplier = 0.8 + (Math.sqrt(len) * 0.12);
+  // 3-char ≈ 1.01x, 5-char ≈ 1.07x, 8-char ≈ 1.14x, 12-char ≈ 1.22x
 
   // 2. Sentence momentum — start slow, build speed, plateau
   let momentumMultiplier;
   if (wordsIntoSentence <= 1) {
-    momentumMultiplier = 1.25; // sentence opener: slow, brain is parsing new context
+    momentumMultiplier = 1.2; // sentence opener: brain is parsing new context
   } else if (wordsIntoSentence === 2) {
-    momentumMultiplier = 1.12;
-  } else if (wordsIntoSentence === 3) {
-    momentumMultiplier = 1.04;
-  } else if (wordsIntoSentence < 8) {
-    momentumMultiplier = 1.0; // cruising
+    momentumMultiplier = 1.1;
+  } else if (wordsIntoSentence <= 4) {
+    momentumMultiplier = 1.0;
   } else {
-    momentumMultiplier = 0.94; // deep in sentence, brain has full context, slightly faster
+    momentumMultiplier = 0.95; // cruising, brain has full context
   }
 
-  // 3. Punctuation pauses — applied after the word (delay before next word appears)
-  let punctuationPause = 0;
-  if (/[.!?]$/.test(word)) {
-    // Sentence end — longest pause. Also reset sentence counter.
-    punctuationPause = baseDelay * 0.65;
-    wordsIntoSentence = 0;
-  } else if (/\.{2,}|…$/.test(word)) {
+  // 3. Punctuation pauses — multiplicative on base delay (research consensus)
+  let punctuationMultiplier = 1.0;
+  if (/\.{2,}|…$/.test(word)) {
     // Ellipsis — dramatic pause
-    punctuationPause = baseDelay * 0.55;
+    punctuationMultiplier = 2.5;
+    wordsIntoSentence = 0;
+  } else if (/[.!?]$/.test(word)) {
+    // Sentence end — longest pause (research: 2.0–3.0x)
+    punctuationMultiplier = 2.5;
+    wordsIntoSentence = 0;
   } else if (/[;]$/.test(word)) {
-    // Semicolon — major clause break
-    punctuationPause = baseDelay * 0.4;
+    // Semicolon — major clause break (research: 2.0x)
+    punctuationMultiplier = 2.0;
   } else if (/[:]$/.test(word)) {
-    // Colon — introducing something
-    punctuationPause = baseDelay * 0.45;
+    // Colon — introducing something (research: 2.0x)
+    punctuationMultiplier = 2.0;
   } else if (/[,]$/.test(word)) {
-    // Comma — brief breath
-    punctuationPause = baseDelay * 0.22;
+    // Comma — brief breath (research: 1.5–2.0x)
+    punctuationMultiplier = 1.5;
   } else if (/[—–\-]$/.test(word) || /^[—–\-]/.test(word)) {
     // Dash — parenthetical or interruption
-    punctuationPause = baseDelay * 0.3;
+    punctuationMultiplier = 1.5;
   }
 
-  // 4. Opening quotes — slight pause when a new speaker/quote starts
+  // 4. Opening quotes — slight extra pause for new speaker/quote
   if (/^["'\u201C\u2018]/.test(word) && wordsIntoSentence <= 1) {
-    punctuationPause += baseDelay * 0.1;
+    punctuationMultiplier = Math.max(punctuationMultiplier, 1.3);
   }
 
-  return (baseDelay * lengthMultiplier * momentumMultiplier) + punctuationPause;
+  return baseDelay * lengthMultiplier * momentumMultiplier * punctuationMultiplier;
 }
 
 function getElapsed() {
