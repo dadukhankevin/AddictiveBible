@@ -81,6 +81,15 @@ html, body {
   font-style: italic;
 }
 
+.home-byline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  opacity: 0.6;
+  letter-spacing: 0.03em;
+}
+
 .home-icon {
   font-size: 2.5rem;
   color: var(--text-muted);
