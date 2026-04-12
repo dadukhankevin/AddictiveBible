@@ -20,16 +20,17 @@ const MAX_RECENT = 8;
 export function initWordHunt({ onChange }) {
   onStateChange = onChange;
   load();
-  active = true; // default on each session
   notify();
 }
 
 function load() {
+  active = true; // default for new users
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
       const data = JSON.parse(saved);
       allTimeHigh = data.allTimeHigh || 0;
+      if (typeof data.active === 'boolean') active = data.active;
       const today = getToday();
       if (data.todayDate === today) {
         todayScore = data.todayScore || 0;
@@ -56,6 +57,7 @@ function save() {
     todayScore,
     todayDate,
     allTimeHigh,
+    active,
   }));
 }
 
@@ -68,6 +70,7 @@ export function toggleWordHunt() {
   if (!active) {
     currentTarget = null;
   }
+  save();
   notify();
   return active;
 }

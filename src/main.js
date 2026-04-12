@@ -178,13 +178,14 @@ function updateWordHuntHUD(state) {
   const wordEl = document.getElementById('wh-word');
   const scoreEl = document.getElementById('wh-score');
   const bestEl = document.getElementById('wh-best');
-  const huntBtn = document.getElementById('hunt-btn');
   const readerScreen = document.getElementById('reader-screen');
+  const toggleEl = document.getElementById('wordhunt-toggle');
+
+  if (toggleEl) toggleEl.checked = state.active;
 
   if (state.active) {
     hud.classList.add('active');
     readerScreen.classList.add('wh-on');
-    huntBtn.classList.add('hunt-active');
     if (state.target) {
       wordEl.textContent = state.target.word;
     } else {
@@ -195,7 +196,6 @@ function updateWordHuntHUD(state) {
   } else {
     hud.classList.remove('active');
     readerScreen.classList.remove('wh-on');
-    huntBtn.classList.remove('hunt-active');
   }
 }
 
@@ -210,17 +210,16 @@ function showWordHuntFeedback(isPositive) {
   }, 1000);
 }
 
-// Word hunt toggle buttons
-document.getElementById('hunt-btn').addEventListener('click', () => {
+// Word hunt toggle: from settings page and the HUD's close (X) button.
+function handleWordHuntToggle() {
   const nowActive = toggleWordHunt();
   if (nowActive) {
     const vi = getAnchorVerse();
     pickTarget(vi);
   }
-});
+}
 
-document.getElementById('wh-close').addEventListener('click', () => {
-  toggleWordHunt();
-});
+document.getElementById('wordhunt-toggle').addEventListener('change', handleWordHuntToggle);
+document.getElementById('wh-close').addEventListener('click', handleWordHuntToggle);
 
 init().catch(console.error);

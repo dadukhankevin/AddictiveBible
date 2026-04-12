@@ -105,9 +105,6 @@
       </div>
       <span id="header-ref"></span>
       <div class="header-right">
-        <button id="hunt-btn" class="header-btn" aria-label="Word Hunt">
-          <i class="fa-solid fa-crosshairs"></i>
-        </button>
         <button id="likes-btn" class="header-btn" aria-label="Likes">
           <i class="fa-solid fa-heart"></i>
         </button>
@@ -284,6 +281,21 @@
         <div class="settings-preview">
           <div class="settings-preview-label">Preview</div>
           <div id="settings-preview-text" class="settings-preview-text"></div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <div class="settings-section-title">Games</div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <div class="settings-row-title"><i class="fa-solid fa-crosshairs settings-row-icon"></i> Word hunt</div>
+            <div class="settings-row-hint">Find rare words while reading for points. Tap the target word to score.</div>
+          </div>
+          <label class="settings-toggle">
+            <input type="checkbox" id="wordhunt-toggle">
+            <span class="settings-toggle-track"><span class="settings-toggle-thumb"></span></span>
+          </label>
         </div>
       </section>
 

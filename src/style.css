@@ -1498,6 +1498,12 @@ html, body {
   color: var(--text);
 }
 
+.settings-row-icon {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-right: 0.35rem;
+}
+
 .settings-row-hint {
   margin-top: 0.2rem;
   font-family: 'Inter', sans-serif;
