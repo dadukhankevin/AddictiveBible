@@ -1,6 +1,12 @@
 import { getVerse, getVerseRef, getBooks, getChaptersForBook, getVersesForChapter, findVerseIndex, getTotalVerses } from './bible.js';
 import { likeVerse, isVerseLiked, getLikedVerses, unlikeVerse } from './signals.js';
 import { getStreak, getStats, formatDuration } from './stats.js';
+import {
+  FONT_SIZES, SPEED_FONT_SIZES,
+  getFontIndex, getSpeedFontIndex, getBionicEnabled, getBionicIntensity,
+  changeFontSize, changeSpeedFont, setBionicEnabled, setBionicIntensity,
+  onSettingsChange, bionicSplitIndex,
+} from './settings.js';
 
 let modal = null;
 let modalRef = null;
@@ -94,10 +100,10 @@ export function initUI({ onShuffle, onSpeedRead, onNavigate }) {
   document.getElementById('stats-btn').addEventListener('click', openStats);
   document.getElementById('stats-close').addEventListener('click', closeStats);
 
-  // Font size controls
-  initFontSize();
-  document.getElementById('font-down').addEventListener('click', () => changeFontSize(-1));
-  document.getElementById('font-up').addEventListener('click', () => changeFontSize(1));
+  // Settings button
+  initSettingsOverlay();
+  document.getElementById('settings-btn').addEventListener('click', openSettings);
+  document.getElementById('settings-close').addEventListener('click', closeSettings);
 
   shuffleBtn.addEventListener('click', () => {
     shuffleBtn.classList.remove('spin');
@@ -107,27 +113,77 @@ export function initUI({ onShuffle, onSpeedRead, onNavigate }) {
   });
 }
 
-// ==================== FONT SIZE ====================
+// ==================== SETTINGS OVERLAY ====================
 
-const FONT_SIZES = [0.9, 1.0, 1.15, 1.3, 1.5, 1.7];
-const FONT_KEY = 'ab_fontsize';
-let fontSizeIndex = 2; // default 1.15rem
+const PREVIEW_SENTENCE = 'In the beginning God created the heavens and the earth.';
 
-function initFontSize() {
-  const saved = localStorage.getItem(FONT_KEY);
-  if (saved !== null) fontSizeIndex = parseInt(saved);
-  applyFontSize();
+function initSettingsOverlay() {
+  document.getElementById('font-down').addEventListener('click', () => changeFontSize(-1));
+  document.getElementById('font-up').addEventListener('click', () => changeFontSize(1));
+  document.getElementById('speed-font-down').addEventListener('click', () => changeSpeedFont(-1));
+  document.getElementById('speed-font-up').addEventListener('click', () => changeSpeedFont(1));
+  document.getElementById('bionic-down').addEventListener('click', () => setBionicIntensity(getBionicIntensity() - 1));
+  document.getElementById('bionic-up').addEventListener('click', () => setBionicIntensity(getBionicIntensity() + 1));
+  document.getElementById('bionic-toggle').addEventListener('change', (e) => {
+    setBionicEnabled(e.target.checked);
+  });
+
+  // Re-render overlay state whenever settings change (e.g. from another part of the app).
+  onSettingsChange(() => {
+    if (document.getElementById('settings-overlay').classList.contains('active')) {
+      renderSettingsState();
+    }
+  });
 }
 
-function changeFontSize(delta) {
-  fontSizeIndex = Math.max(0, Math.min(FONT_SIZES.length - 1, fontSizeIndex + delta));
-  localStorage.setItem(FONT_KEY, String(fontSizeIndex));
-  applyFontSize();
+function openSettings() {
+  renderSettingsState();
+  document.getElementById('settings-overlay').classList.add('active');
 }
 
-function applyFontSize() {
-  const size = FONT_SIZES[fontSizeIndex];
-  document.documentElement.style.setProperty('--verse-font-size', size + 'rem');
+function closeSettings() {
+  document.getElementById('settings-overlay').classList.remove('active');
+}
+
+function renderSettingsState() {
+  document.getElementById('font-size-label').textContent =
+    `${getFontIndex() + 1} / ${FONT_SIZES.length}`;
+  document.getElementById('speed-font-label').textContent =
+    `${getSpeedFontIndex() + 1} / ${SPEED_FONT_SIZES.length}`;
+  document.getElementById('bionic-intensity-label').textContent =
+    `${getBionicIntensity()} / 5`;
+
+  const enabled = getBionicEnabled();
+  document.getElementById('bionic-toggle').checked = enabled;
+  const intensityRow = document.getElementById('bionic-intensity-row');
+  intensityRow.classList.toggle('disabled', !enabled);
+
+  renderBionicPreview();
+}
+
+function renderBionicPreview() {
+  const el = document.getElementById('settings-preview-text');
+  if (!el) return;
+  const parts = PREVIEW_SENTENCE.split(/(\s+)/);
+  let html = '';
+  for (const part of parts) {
+    if (/^\s*$/.test(part)) {
+      html += part;
+      continue;
+    }
+    const escaped = escapeHtml(part);
+    if (getBionicEnabled()) {
+      const idx = bionicSplitIndex(part);
+      html += `<b class="bionic-b">${escapeHtml(part.slice(0, idx))}</b>${escapeHtml(part.slice(idx))}`;
+    } else {
+      html += escaped;
+    }
+  }
+  el.innerHTML = html;
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 // ==================== STATS DASHBOARD ====================

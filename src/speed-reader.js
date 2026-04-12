@@ -1,4 +1,5 @@
 import { getVerse, getVerseRef, getTotalVerses } from './bible.js';
+import { getSpeedFontRem, getBionicEnabled, bionicSplitIndex, onSettingsChange } from './settings.js';
 
 let overlay = null;
 let wordEl = null;
@@ -29,10 +30,6 @@ const MIN_WPM = 100;
 const MAX_WPM = 1000;
 const WPM_STEP = 50;
 
-const SPEED_FONT_SIZES = [1.8, 2.2, 2.8, 3.4, 4.0];
-const SPEED_FONT_KEY = 'ab_speed_fontsize';
-let speedFontIndex = 2; // default 2.8rem
-
 export function initSpeedReader({ onCloseHandler }) {
   overlay = document.getElementById('speed-overlay');
   wordEl = document.getElementById('speed-word');
@@ -46,14 +43,20 @@ export function initSpeedReader({ onCloseHandler }) {
   document.getElementById('speed-close').addEventListener('click', close);
   document.getElementById('speed-slower').addEventListener('click', slower);
   document.getElementById('speed-faster').addEventListener('click', faster);
-  document.getElementById('speed-font-down').addEventListener('click', () => changeSpeedFont(-1));
-  document.getElementById('speed-font-up').addEventListener('click', () => changeSpeedFont(1));
   playPauseBtn.addEventListener('click', togglePause);
 
-  // Load saved font size
-  const savedFont = localStorage.getItem(SPEED_FONT_KEY);
-  if (savedFont !== null) speedFontIndex = parseInt(savedFont);
   applySpeedFont();
+
+  // React to setting changes while the overlay is open.
+  onSettingsChange((changes) => {
+    if (!changes) return;
+    if (changes.speedFontSize) applySpeedFont();
+    if (changes.bionic && words.length > 0 && wordIndex > 0) {
+      // Re-render the most recently shown word so bionic toggles apply immediately.
+      const lastEntry = words[wordIndex - 1];
+      if (lastEntry) renderORP(lastEntry.word);
+    }
+  });
 }
 
 export function startSpeedRead(verseIndex) {
@@ -184,11 +187,33 @@ function renderORP(word) {
   const orp = word[orpCharIndex] || '';
   const after = word.slice(orpCharIndex + 1);
 
-  // Use a table layout to pin the ORP letter to the center guide
+  // Bionic: bold the first N chars of the word. The bionic split index may
+  // land before, on, or after the ORP letter — we build the three slots with
+  // optional <b> wraps to cover all three cases.
+  const bionicIdx = getBionicEnabled() ? bionicSplitIndex(word) : 0;
+
+  const beforeHtml = splitBold(before, bionicIdx, 0);
+  const orpHtml = bionicIdx > orpCharIndex ? `<b class="bionic-b">${escapeHtml(orp)}</b>` : escapeHtml(orp);
+  const afterHtml = splitBold(after, bionicIdx, orpCharIndex + 1);
+
   wordEl.innerHTML =
-    `<span class="orp-before">${before}</span>` +
-    `<span class="orp-letter">${orp}</span>` +
-    `<span class="orp-after">${after}</span>`;
+    `<span class="orp-before">${beforeHtml}</span>` +
+    `<span class="orp-letter">${orpHtml}</span>` +
+    `<span class="orp-after">${afterHtml}</span>`;
+}
+
+// Split a substring at the global bionic boundary into a bold + plain part.
+// `baseOffset` is where `segment` starts in the parent word.
+function splitBold(segment, bionicIdx, baseOffset) {
+  if (bionicIdx <= baseOffset) return escapeHtml(segment);
+  const segEnd = baseOffset + segment.length;
+  if (bionicIdx >= segEnd) return `<b class="bionic-b">${escapeHtml(segment)}</b>`;
+  const cut = bionicIdx - baseOffset;
+  return `<b class="bionic-b">${escapeHtml(segment.slice(0, cut))}</b>${escapeHtml(segment.slice(cut))}`;
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 // Natural reading rhythm model — based on RSVP research:
@@ -329,16 +354,9 @@ function updateWpmDisplay() {
   wpmEl.textContent = `${wpm} wpm`;
 }
 
-function changeSpeedFont(delta) {
-  speedFontIndex = Math.max(0, Math.min(SPEED_FONT_SIZES.length - 1, speedFontIndex + delta));
-  localStorage.setItem(SPEED_FONT_KEY, String(speedFontIndex));
-  applySpeedFont();
-}
-
 function applySpeedFont() {
-  const size = SPEED_FONT_SIZES[speedFontIndex];
-  wordEl.style.fontSize = size + 'rem';
-  document.getElementById('speed-font-label').textContent = `Font ${speedFontIndex + 1}/${SPEED_FONT_SIZES.length}`;
+  if (!wordEl) return;
+  wordEl.style.fontSize = getSpeedFontRem() + 'rem';
 }
 
 function updatePlayPauseIcon() {

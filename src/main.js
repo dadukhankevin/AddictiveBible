@@ -7,12 +7,14 @@ import { initUI, initHomeScreen, showReader, setBackgroundImage, updateHeader, s
 import { initSpeedReader, startSpeedRead } from './speed-reader.js';
 import { initStats, recordChapter } from './stats.js';
 import { initWordHunt, pickTarget, checkWordTap, checkScrollPast, isWordHuntActive, toggleWordHunt } from './word-hunt.js';
+import { initSettings } from './settings.js';
 
 let readerInitialized = false;
 let savePositionTimer = null;
 
 async function init() {
   await Promise.all([loadBible(), loadRecommendData()]);
+  initSettings();
   initSignals();
   initStats();
   initWordHunt({ onChange: updateWordHuntHUD });

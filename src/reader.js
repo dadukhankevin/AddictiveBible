@@ -1,5 +1,6 @@
 import { getVerse, getVerseRef, getTotalVerses } from './bible.js';
 import { findSurpriseVerse } from './recommend.js';
+import { bionicSplitIndex, onSettingsChange } from './settings.js';
 
 const BUFFER_SIZE = 80;
 const LOAD_MORE = 30;
@@ -60,6 +61,34 @@ export function initReader({ onVerseChange, onNavigate }) {
 
   topObserver.observe(sentinelTop);
   bottomObserver.observe(sentinelBottom);
+
+  // Re-render the visible passage when bionic settings change so the bold
+  // prefixes appear/disappear without needing a page reload.
+  onSettingsChange((changes) => {
+    if (changes && changes.bionic) rerenderPassage();
+  });
+}
+
+// Re-render the currently loaded range in place. The anchor verse stays put
+// because we restore scrollTop to the same verse element afterwards.
+function rerenderPassage() {
+  if (!versesEl || renderedEnd < renderedStart) return;
+  const anchorVi = getAnchorVerse();
+
+  clearRevealQueue();
+  lastSurpriseVi = -999;
+  versesEl.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  for (let i = renderedStart; i <= renderedEnd; i++) {
+    frag.appendChild(createVerseEl(i));
+  }
+  versesEl.appendChild(frag);
+
+  requestAnimationFrame(() => {
+    const target = versesEl.querySelector(`[data-vi="${anchorVi}"]`);
+    if (target) container.scrollTop = target.offsetTop - 60;
+    revealVisibleVerses();
+  });
 }
 
 // Stagger reveals so they cascade in rather than all popping at once
@@ -212,6 +241,10 @@ export function getScrollDelta() {
 const HOLY_WORDS = new Set(['lord', 'god', 'jesus', 'christ', 'messiah', 'almighty', 'holy', 'spirit']);
 const GOLDEN_CHANCE = 0.007; // ~0.7% of verses get the golden treatment
 
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function createVerseEl(i) {
   const v = getVerse(i);
   if (!v) return document.createDocumentFragment();
@@ -228,10 +261,19 @@ function createVerseEl(i) {
       html += part || '';
       continue;
     }
-    const escaped = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const clean = part.toLowerCase().replace(/[^a-z]/g, '');
     const isHoly = HOLY_WORDS.has(clean);
-    const wordSpan = `<span class="w" data-w="${clean}">${escaped}</span>`;
+
+    // Bionic prefix: bold the first N letters when bionic mode is enabled.
+    // When disabled, bionicSplitIndex returns 0 so the whole word is in the tail.
+    const splitIdx = bionicSplitIndex(part);
+    const head = escapeHtml(part.slice(0, splitIdx));
+    const tail = escapeHtml(part.slice(splitIdx));
+    const inner = splitIdx > 0
+      ? `<b class="bionic-b">${head}</b>${tail}`
+      : tail;
+
+    const wordSpan = `<span class="w" data-w="${clean}">${inner}</span>`;
     html += isHoly ? `<strong class="holy-name">${wordSpan}</strong>` : wordSpan;
   }
   html += ' ';

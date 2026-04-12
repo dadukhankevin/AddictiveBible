@@ -105,12 +105,6 @@
       </div>
       <span id="header-ref"></span>
       <div class="header-right">
-        <button id="font-down" class="header-btn" aria-label="Smaller text">
-          <i class="fa-solid fa-minus"></i>
-        </button>
-        <button id="font-up" class="header-btn" aria-label="Larger text">
-          <i class="fa-solid fa-plus"></i>
-        </button>
         <button id="hunt-btn" class="header-btn" aria-label="Word Hunt">
           <i class="fa-solid fa-crosshairs"></i>
         </button>
@@ -119,6 +113,9 @@
         </button>
         <button id="stats-btn" class="header-btn" aria-label="Stats">
           <i class="fa-solid fa-chart-simple"></i>
+        </button>
+        <button id="settings-btn" class="header-btn" aria-label="Settings">
+          <i class="fa-solid fa-sliders"></i>
         </button>
       </div>
     </div>
@@ -177,15 +174,6 @@
         <i class="fa-solid fa-plus"></i>
       </button>
     </div>
-    <div class="speed-controls">
-      <button id="speed-font-down" class="speed-ctrl-btn">
-        <i class="fa-solid fa-minus"></i>
-      </button>
-      <div id="speed-font-label" class="speed-wpm">Font</div>
-      <button id="speed-font-up" class="speed-ctrl-btn">
-        <i class="fa-solid fa-plus"></i>
-      </button>
-    </div>
     <button id="speed-playpause" class="speed-playpause">
       <i class="fa-solid fa-pause"></i>
     </button>
@@ -215,6 +203,91 @@
       </button>
     </div>
     <div id="likes-list" class="likes-list"></div>
+  </div>
+
+  <!-- Settings Overlay -->
+  <div id="settings-overlay" class="settings-overlay">
+    <div class="settings-header">
+      <h2 class="settings-title"><i class="fa-solid fa-sliders"></i> Reading Settings</h2>
+      <button id="settings-close" class="settings-close" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="settings-content">
+
+      <section class="settings-section">
+        <div class="settings-section-title">Text size</div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <div class="settings-row-title">Reader</div>
+            <div class="settings-row-hint">Normal Bible text</div>
+          </div>
+          <div class="settings-stepper">
+            <button id="font-down" class="settings-step-btn" aria-label="Smaller reader text">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <span id="font-size-label" class="settings-step-value">3 / 6</span>
+            <button id="font-up" class="settings-step-btn" aria-label="Larger reader text">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <div class="settings-row-title">Speed read</div>
+            <div class="settings-row-hint">Word flashing size</div>
+          </div>
+          <div class="settings-stepper">
+            <button id="speed-font-down" class="settings-step-btn" aria-label="Smaller speed text">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <span id="speed-font-label" class="settings-step-value">3 / 5</span>
+            <button id="speed-font-up" class="settings-step-btn" aria-label="Larger speed text">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <div class="settings-section-title">Bionic reading</div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <div class="settings-row-title">Enable bionic reading</div>
+            <div class="settings-row-hint">Bold the first few letters of each word to guide your eye. Works in normal and speed read.</div>
+          </div>
+          <label class="settings-toggle">
+            <input type="checkbox" id="bionic-toggle">
+            <span class="settings-toggle-track"><span class="settings-toggle-thumb"></span></span>
+          </label>
+        </div>
+
+        <div class="settings-row" id="bionic-intensity-row">
+          <div class="settings-row-label">
+            <div class="settings-row-title">Bold intensity</div>
+            <div class="settings-row-hint">How many letters to bold per word</div>
+          </div>
+          <div class="settings-stepper">
+            <button id="bionic-down" class="settings-step-btn" aria-label="Less bold">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <span id="bionic-intensity-label" class="settings-step-value">3 / 5</span>
+            <button id="bionic-up" class="settings-step-btn" aria-label="More bold">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-preview">
+          <div class="settings-preview-label">Preview</div>
+          <div id="settings-preview-text" class="settings-preview-text"></div>
+        </div>
+      </section>
+
+    </div>
   </div>
 
   <!-- Verse Modal -->
