@@ -152,6 +152,37 @@ html, body {
   opacity: 0.35;
 }
 
+.home-flappy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  width: 100%;
+  margin: 0 0 3rem;
+  padding: 1rem 1.1rem;
+  background: #000;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.62rem;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.home-flappy-btn i {
+  font-size: 0.9rem;
+}
+
+.home-flappy-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Verse of the X */
 .home-verses {
   margin-bottom: 2.5rem;
@@ -1614,4 +1645,115 @@ html, body {
   font-size: 1.1rem;
   line-height: 1.7;
   color: var(--text);
+}
+
+/* ===== Flappy Bible ===== */
+.flappy-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: #000;
+  display: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+.flappy-overlay.active {
+  display: block;
+}
+
+#flappy-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.flappy-icon-btn {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: #000;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 252;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.flappy-close-btn { right: 14px; }
+.flappy-mute { right: 62px; font-size: 0.85rem; }
+
+.flappy-gameover {
+  position: fixed;
+  inset: 0;
+  z-index: 251;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+  pointer-events: none;
+  color: #fff;
+}
+
+.flappy-gameover.show {
+  display: flex;
+}
+
+.fg-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow: 0 0 12px rgba(255, 45, 45, 0.6);
+}
+
+.fg-stats {
+  font-family: 'VT323', monospace;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.fg-determined {
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  color: #ff2d2d;
+  letter-spacing: 1px;
+}
+
+.fg-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  pointer-events: auto;
+}
+
+.fg-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  padding: 12px 18px;
+  background: #000;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.fg-btn:active {
+  background: #fff;
+  color: #000;
 }

@@ -1,10 +1,11 @@
-import { loadBible, getVerse, getChapterForVerse } from './bible.js';
+import { loadBible, getVerse, getChapterForVerse, getTotalVerses } from './bible.js';
 import { initReader, loadPassage, getAnchorVerse } from './reader.js';
 import { initGestures } from './gestures.js';
 import { initSignals, setAnchor, onSwipeAway, likeVerse, saveLastVerse, getLastVerse } from './signals.js';
 import { loadRecommendData, recommend, randomColdStart } from './recommend.js';
 import { initUI, initHomeScreen, showReader, setBackgroundImage, updateHeader, showModal, closeModal, isModalOpen } from './ui.js';
 import { initSpeedReader, startSpeedRead } from './speed-reader.js';
+import { initFlappy, startFlappy } from './flappy.js';
 import { initStats, recordChapter } from './stats.js';
 import { initWordHunt, pickTarget, checkWordTap, checkScrollPast, isWordHuntActive, toggleWordHunt } from './word-hunt.js';
 import { initSettings } from './settings.js';
@@ -41,6 +42,23 @@ async function init() {
 
   initSpeedReader({
     onCloseHandler: (vi) => {
+      loadPassage(vi);
+      updateHeader(vi);
+
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.speed-highlight').forEach(el => el.classList.remove('speed-highlight'));
+        const el = document.querySelector(`[data-vi="${vi}"]`);
+        if (el) {
+          el.classList.add('revealed');
+          el.classList.add('speed-highlight');
+        }
+      });
+    },
+  });
+
+  initFlappy({
+    onCloseHandler: (vi) => {
+      // Drop the reader at the verse you flew to
       loadPassage(vi);
       updateHeader(vi);
 
@@ -221,5 +239,21 @@ function handleWordHuntToggle() {
 
 document.getElementById('wordhunt-toggle').addEventListener('change', handleWordHuntToggle);
 document.getElementById('wh-close').addEventListener('click', handleWordHuntToggle);
+
+// Flappy Bible — launch from the current anchor verse
+document.getElementById('flappy-btn').addEventListener('click', () => {
+  startFlappy(getAnchorVerse());
+});
+
+// Flappy Bible — launch straight from the home screen
+function handlePlayFlappy() {
+  if (getTotalVerses() === 0) return; // bible still loading
+  const lastVi = getLastVerse();
+  const vi = lastVi !== null ? lastVi : randomColdStart();
+  startReading(vi); // set up the reader underneath so exiting lands in the text
+  startFlappy(vi);
+}
+
+document.getElementById('home-flappy-btn').addEventListener('click', handlePlayFlappy);
 
 init().catch(console.error);

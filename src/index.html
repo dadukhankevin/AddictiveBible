@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="./style.css">
 </head>
@@ -53,7 +54,15 @@
           <i class="fa-solid fa-crosshairs"></i>
           <span>Word hunt game</span>
         </div>
+        <div class="instruction">
+          <i class="fa-solid fa-dove"></i>
+          <span>Flappy Bible (experimental)</span>
+        </div>
       </div>
+      <button id="home-flappy-btn" class="home-flappy-btn" type="button">
+        <i class="fa-solid fa-dove"></i>
+        <span>PLAY FLAPPY BIBLE</span>
+      </button>
       <div class="home-verses">
         <div class="home-verse-row">
           <div class="home-verse-label">Verse of the day</div>
@@ -105,6 +114,9 @@
       </div>
       <span id="header-ref"></span>
       <div class="header-right">
+        <button id="flappy-btn" class="header-btn" aria-label="Flappy Bible">
+          <i class="fa-solid fa-dove"></i>
+        </button>
         <button id="likes-btn" class="header-btn" aria-label="Likes">
           <i class="fa-solid fa-heart"></i>
         </button>
@@ -175,6 +187,26 @@
       <i class="fa-solid fa-pause"></i>
     </button>
     <div id="speed-stats" class="speed-stats">0 words &middot; 0s</div>
+  </div>
+
+  <!-- Flappy Bible Overlay -->
+  <div id="flappy-overlay" class="flappy-overlay">
+    <canvas id="flappy-canvas"></canvas>
+    <button id="flappy-mute" class="flappy-icon-btn flappy-mute" aria-label="Mute">
+      <i class="fa-solid fa-volume-high"></i>
+    </button>
+    <button id="flappy-close" class="flappy-icon-btn flappy-close-btn" aria-label="Close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div id="flappy-gameover" class="flappy-gameover">
+      <div class="fg-title">GAME OVER</div>
+      <div id="fg-stats" class="fg-stats"></div>
+      <div class="fg-determined">Stay determined.</div>
+      <div class="fg-buttons">
+        <button id="flappy-retry" class="fg-btn">RETRY</button>
+        <button id="flappy-exit" class="fg-btn">EXIT</button>
+      </div>
+    </div>
   </div>
 
   <!-- Navigation Picker -->
